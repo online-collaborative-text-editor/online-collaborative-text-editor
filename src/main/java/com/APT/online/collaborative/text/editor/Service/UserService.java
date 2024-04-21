@@ -1,5 +1,7 @@
-package com.APT.online.collaborative.text.editor.user;
+package com.APT.online.collaborative.text.editor.Service;
 
+import com.APT.online.collaborative.text.editor.Model.User;
+import com.APT.online.collaborative.text.editor.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

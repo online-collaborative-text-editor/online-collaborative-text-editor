@@ -1,4 +1,4 @@
-package com.APT.online.collaborative.text.editor.user;
+package com.APT.online.collaborative.text.editor.Model;
 
 import lombok.*;
 import jakarta.persistence.*;
@@ -13,7 +13,6 @@ import jakarta.persistence.*;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String password;

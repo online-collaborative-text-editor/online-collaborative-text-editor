@@ -1,5 +1,6 @@
-package com.APT.online.collaborative.text.editor.user;
+package com.APT.online.collaborative.text.editor.Repository;
 
+import com.APT.online.collaborative.text.editor.Model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
