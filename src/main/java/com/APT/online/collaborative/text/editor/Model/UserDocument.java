@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.User;
 
 @Entity
 @Table(name = "user_document")
@@ -16,7 +17,7 @@ public class UserDocument {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "document_id", nullable = false)

@@ -1,6 +1,6 @@
 package com.APT.online.collaborative.text.editor.Controller;
 
-import com.APT.online.collaborative.text.editor.Model.User;
+import com.APT.online.collaborative.text.editor.Model.UserEntity;
 import com.APT.online.collaborative.text.editor.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +19,12 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<User> getUsers() {
+    public List<UserEntity> getUsers() {
         return userService.getUsers();
     }
 
     @PostMapping("/")
-    public void addUser(@RequestBody User user) {
+    public void addUser(@RequestBody UserEntity user) {
         userService.addUser(user);
     }
 
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public void updateUser(@PathVariable("userId") Long userId, @RequestBody User user) {
+    public void updateUser(@PathVariable("userId") Long userId, @RequestBody UserEntity user) {
         userService.updateUser(userId, user);
     }
 }

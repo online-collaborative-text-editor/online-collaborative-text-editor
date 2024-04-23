@@ -1,6 +1,6 @@
 package com.APT.online.collaborative.text.editor.Service;
 
-import com.APT.online.collaborative.text.editor.Model.User;
+import com.APT.online.collaborative.text.editor.Model.UserEntity;
 import com.APT.online.collaborative.text.editor.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +17,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getUsers() {
+    public List<UserEntity> getUsers() {
         return userRepository.findAll();
     }
 
-    public void addUser(User user) {
+    public void addUser(UserEntity user) {
         if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("Username already taken");
         }
@@ -37,8 +37,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long userId, User user) {
-        User existingUser = userRepository.findById(userId)
+    public void updateUser(Long userId, UserEntity user) {
+        UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User with id " + userId + " does not exist"));
 
         if (user.getUsername() != null && user.getUsername().length() > 0 && !user.getUsername().equals(existingUser.getUsername())) {
