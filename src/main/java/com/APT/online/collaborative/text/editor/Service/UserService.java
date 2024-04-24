@@ -41,14 +41,14 @@ public class UserService {
         UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalStateException("User with id " + userId + " does not exist"));
 
-        if (user.getUsername() != null && user.getUsername().length() > 0 && !user.getUsername().equals(existingUser.getUsername())) {
+        if (user.getUsername() != null && !user.getUsername().isEmpty() && !user.getUsername().equals(existingUser.getUsername())) {
             if (userRepository.findUserByUsername(user.getUsername()).isPresent()) {
                 throw new IllegalStateException("Username already taken");
             }
             existingUser.setUsername(user.getUsername());
         }
 
-        if (user.getPassword() != null && user.getPassword().length() > 0 && !user.getPassword().equals(existingUser.getPassword())) {
+        if (user.getPassword() != null && !user.getPassword().isEmpty() && !user.getPassword().equals(existingUser.getPassword())) {
             existingUser.setPassword(user.getPassword());
         }
     }
