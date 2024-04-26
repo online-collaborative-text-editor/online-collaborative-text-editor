@@ -1,6 +1,5 @@
 package com.APT.online.collaborative.text.editor.Model;
 
-import com.APT.online.collaborative.text.editor.UserDocument;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
+//Using @Data for JPA entities is not recommended. It can cause severe performance and memory consumption issues.
 @Data
 @NoArgsConstructor
 @Setter

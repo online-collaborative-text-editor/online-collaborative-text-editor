@@ -1,6 +1,5 @@
 package com.APT.online.collaborative.text.editor.Model;
 
-import com.APT.online.collaborative.text.editor.UserDocument;
 
 import lombok.*;
 import jakarta.persistence.*;
