@@ -1,4 +1,4 @@
-package com.APT.online.collaborative.text.editor;
+package com.APT.online.collaborative.text.editor.Model;
 
 import com.APT.online.collaborative.text.editor.Model.Document;
 import com.APT.online.collaborative.text.editor.Model.UserEntity;
