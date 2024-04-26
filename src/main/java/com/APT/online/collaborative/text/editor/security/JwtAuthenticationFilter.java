@@ -1,5 +1,8 @@
 package com.APT.online.collaborative.text.editor.security;
 
+import com.APT.online.collaborative.text.editor.Model.UserEntity;
+
+import com.APT.online.collaborative.text.editor.Repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
@@ -20,7 +24,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private CustomUsersDetailsService customUsersDetailsService;
 
-
+	@Autowired
+	private UserRepository userRepository;
+	public UserEntity getUserFromRequest(HttpServletRequest request) {
+		String token = getJwtFromRequest(request);
+		if (StringUtils.hasText(token) && tokenGenerator.validateJwt(token)) {
+			String username = tokenGenerator.getUsernameFromJwt(token);
+			UserDetails userDetails = customUsersDetailsService.loadUserByUsername(username);
+			if (userDetails != null) {
+				UserEntity user = userRepository.findUserByUsername(username).orElse(null);
+				return user;
+			}
+		}
+		return null;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,

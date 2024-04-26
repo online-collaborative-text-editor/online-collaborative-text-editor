@@ -1,19 +1,25 @@
-package com.APT.online.collaborative.text.editor.Model;
+package com.APT.online.collaborative.text.editor;
 
-import com.APT.online.collaborative.text.editor.Permission;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
+import com.APT.online.collaborative.text.editor.Model.Document;
+import com.APT.online.collaborative.text.editor.Model.UserEntity;
+import lombok.*;
 import jakarta.persistence.*;
-import org.springframework.security.core.userdetails.User;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.time.LocalDateTime;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Setter
+@Getter
+@ToString
 
 @Entity
-@Table(name = "user_document")
+@Table(name = "user-document")
 public class UserDocument {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,8 +30,5 @@ public class UserDocument {
     private Document document;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "permission", nullable = false)
     private Permission permission;
-
-    // getters and setters
 }

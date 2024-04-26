@@ -1,10 +1,13 @@
 package com.APT.online.collaborative.text.editor.Model;
 
+import com.APT.online.collaborative.text.editor.UserDocument;
+
 import lombok.*;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,6 +44,9 @@ public class Document {
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
 
+
+    @OneToMany(mappedBy = "document")
+    private List<UserDocument> userDocuments;
 
     public Document(String documentName, String documentType, byte[] data, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.documentName = documentName;

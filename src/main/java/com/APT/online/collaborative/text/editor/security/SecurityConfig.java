@@ -37,14 +37,14 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers( "/api/auth/**").permitAll()
+						.requestMatchers( "/api/auth/**", "/api/files/**", "/api/files/rename/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.httpBasic();
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
-
 
 	@Bean
 	public AuthenticationManager authenticationManager (

@@ -29,7 +29,7 @@ public class DocumentController {
     }
 
     @PutMapping("/rename/{id}")
-    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestParam("newDocumentName") String newDocumentName) throws FileNotFoundException {
+    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestBody String newDocumentName) throws FileNotFoundException {
         Document document = documentService.renameDocument(documentId, newDocumentName);
         return ResponseEntity.ok("Document with ID " + documentId + " was renamed to " + newDocumentName + " successfully.");
     }
