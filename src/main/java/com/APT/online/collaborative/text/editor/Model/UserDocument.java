@@ -13,20 +13,22 @@ import org.hibernate.annotations.GenericGenerator;
 @ToString
 
 @Entity
-@Table(name = "user-document")
+@Table(name = "user_document")
 public class UserDocument {
-    @Id
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    @EmbeddedId
+    private UserDocumentId id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @MapsId("userId")
+    @JoinColumn(name = "user_id")
+    private UserEntity zzzzzzzzzzzzzzzzzzzzzzzzzzzz;
 
     @ManyToOne
-    @JoinColumn(name = "document_id", nullable = false)
+    @MapsId("documentId")
+    @JoinColumn(name = "document_id")
     private Document document;
 
-    @Enumerated(EnumType.STRING)
-    private Permission permission;
+    private String permission; // Viewer - Editor - Owner
+
+    // getters and setters
 }

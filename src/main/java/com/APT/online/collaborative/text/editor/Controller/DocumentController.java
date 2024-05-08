@@ -5,6 +5,7 @@ import com.APT.online.collaborative.text.editor.Service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
@@ -19,6 +20,8 @@ public class DocumentController {
     @PostMapping("/create")
     public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName) {
         Document document = documentService.createDocument(documentName);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Document document = documentService.createDocument(documentName, username);
         return ResponseEntity.status(HttpStatus.CREATED).body("Document with ID " + document.getId() + " was created successfully.");
     }
 

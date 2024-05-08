@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 
 @Entity
-@Table(name = "databaseFiles")
+@Table(name = "documents")
 public class Document {
 
     @Id
