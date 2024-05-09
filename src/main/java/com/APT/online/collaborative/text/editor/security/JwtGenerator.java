@@ -9,11 +9,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static com.APT.online.collaborative.text.editor.security.SecurityConstants.SECRET_KEY_STRING;
 
 @Component
 public class JwtGenerator {
-	private static final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+	private static final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes(StandardCharsets.UTF_8));
+//	private static final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
 	public String generateToken(Authentication authentication) {
 		String username = authentication.getName();
