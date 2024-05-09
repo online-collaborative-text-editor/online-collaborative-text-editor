@@ -24,7 +24,7 @@ public class DocumentController {
     @PostMapping("/create")
     public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName, @RequestAttribute("username") String username) {
         Document document = documentService.createDocument(documentName, username);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Document with ID " + document.getId() + " was created successfully.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(document.getId());
     }
 
     @PutMapping("/rename/{id}")
