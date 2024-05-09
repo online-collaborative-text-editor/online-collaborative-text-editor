@@ -47,6 +47,7 @@ public class JwtGenerator {
 					.parseClaimsJws(token);
 			return true;
 		} catch (Exception e) {
+			// Dummy commit to trigger changes.
 			throw new AuthenticationCredentialsNotFoundException("JWT was expired or invalid");
 		}
 	}
