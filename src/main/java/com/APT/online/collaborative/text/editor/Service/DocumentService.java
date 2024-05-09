@@ -1,9 +1,11 @@
 package com.APT.online.collaborative.text.editor.Service;
 
 import com.APT.online.collaborative.text.editor.Model.Document;
+import com.APT.online.collaborative.text.editor.Model.UserDocument;
 import com.APT.online.collaborative.text.editor.Model.UserEntity;
 import com.APT.online.collaborative.text.editor.Permission;
 import com.APT.online.collaborative.text.editor.Repository.DocumentRepository;
+import com.APT.online.collaborative.text.editor.Repository.UserDocumentRepository;
 import com.APT.online.collaborative.text.editor.Repository.UserRepository;
 import com.APT.online.collaborative.text.editor.Utils.DocumentUtils;
 import com.APT.online.collaborative.text.editor.Exception.FileStorageException;
@@ -12,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.APT.online.collaborative.text.editor.DTO.DocumentDTO;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DocumentService {
@@ -22,6 +27,8 @@ public class DocumentService {
     private DocumentRepository documentRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
 
     public Document createDocument(String documentName, String username){
         DocumentUtils.validateDocumentName(documentName);
@@ -33,11 +40,13 @@ public class DocumentService {
             }
 
             Document document = new Document(documentName, "text/plain", new byte[0], LocalDateTime.now(), LocalDateTime.now());
-            document.getUsers().add(user);
             Document savedDocument = documentRepository.save(document);
 
-            user.getDocuments().add(savedDocument);
-            userRepository.save(user);
+            UserDocument userDocument = new UserDocument();
+            userDocument.setUser(user);
+            userDocument.setDocument(savedDocument);
+            userDocument.setPermission(Permission.OWNER);
+            userDocumentRepository.save(userDocument);
 
             return savedDocument;
         } catch (Exception ex) {
@@ -45,36 +54,96 @@ public class DocumentService {
         }
     }
 
-    public Document openDocument(String documentId) throws FileNotFoundException {
-        return DocumentUtils.getDocumentById(documentRepository, documentId);
-    }
+    public Document renameDocument(String documentId, String newDocumentName, String username) throws FileNotFoundException, IllegalAccessException {
+        UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
+                .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
 
-    public Document renameDocument(String documentId, String newDocumentName) throws FileNotFoundException {
-        Document document = DocumentUtils.getDocumentById(documentRepository, documentId);
+        if (!(userDocument.getPermission() == Permission.OWNER || userDocument.getPermission() == Permission.EDITOR)) {
+            throw new IllegalAccessException("User does not have permission to rename the document");
+        }
+
+        Document document = userDocument.getDocument();
         DocumentUtils.validateDocumentName(newDocumentName);
         document.setDocumentName(newDocumentName);
         document.setLastModifiedAt(LocalDateTime.now());
         return documentRepository.save(document);
     }
 
-    public void deleteDocument(String documentId) throws FileNotFoundException {
-        Document document = DocumentUtils.getDocumentById(documentRepository, documentId);
-        documentRepository.deleteById(documentId);
+   public void deleteDocument(String documentId, String username) throws FileNotFoundException, IllegalAccessException {
+       UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
+               .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
+
+       if (userDocument.getPermission() != Permission.OWNER) {
+           throw new IllegalAccessException("User does not have permission to delete the document");
+       }
+
+       userDocumentRepository.deleteByDocumentId(documentId);
+       documentRepository.deleteById(documentId);
+   }
+
+    public List<DocumentDTO> listViewerDocuments(String username) {
+        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
+    }
+
+    public List<DocumentDTO> listOwnerDocuments(String username) {
+        return convertToDTO(getDocumentsByPermission(username, Permission.OWNER));
+    }
+
+    public List<DocumentDTO> listViewerEditorDocuments(String username) {
+        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
+        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+        viewerDocuments.addAll(editorDocuments);
+        return convertToDTO(viewerDocuments);
+    }
+
+    private List<DocumentDTO> convertToDTO(List<Document> documents) {
+        List<DocumentDTO> documentDTOs = new ArrayList<>();
+        for (Document document : documents) {
+            DocumentDTO documentDTO = new DocumentDTO(
+                    document.getId(),
+                    document.getDocumentName(),
+                    document.getDocumentType(),
+                    document.getCreatedAt(),
+                    document.getLastModifiedAt(),
+                    document.getUserDocuments()
+            );
+            documentDTOs.add(documentDTO);
+        }
+        return documentDTOs;
+    }
+
+    private List<Document> getDocumentsByPermission(String username, Permission permission) {
+        UserEntity user = userRepository.findUserByUsername(username).orElse(null);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        List<UserDocument> userDocuments = user.getUserDocuments();
+        List<Document> documents = new ArrayList<>();
+        for (UserDocument userDocument : userDocuments) {
+            if (userDocument.getPermission() == permission) {
+                documents.add(userDocument.getDocument());
+            }
+        }
+        return documents;
+    }
+
+    public void shareDocument(String documentId, String username, String permission, String owner) throws FileNotFoundException, IllegalAccessException {
+        UserEntity user = userRepository.findUserByUsername(username).orElse(null);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+
+        UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(owner, documentId)
+                .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + owner));
+
+        if (userDocument.getPermission() != Permission.OWNER) {
+            throw new IllegalAccessException("User does not have permission to share the document");
+        }
+
+        UserDocument newSharedUserDocument = new UserDocument();
+        newSharedUserDocument.setUser(user);
+        newSharedUserDocument.setDocument(userDocument.getDocument());
+        newSharedUserDocument.setPermission(Permission.valueOf(permission));
+        userDocumentRepository.save(newSharedUserDocument);
     }
 }
-
-
-// Spring Security's authentication process works as follows:
-// 1. The user sends a request to a secured endpoint, providing their credentials in the request.
-// 2. An `AuthenticationFilter` (part of Spring Security) intercepts the request.
-//    This filter extracts the credentials from the request.
-// 3. The `AuthenticationFilter` creates an `Authentication` object, storing the user's credentials,
-//    and passes it to the `AuthenticationManager`.
-// 4. The `AuthenticationManager` validates the credentials. If the credentials are valid, the `AuthenticationManager`
-//    sets the `Authentication` object as authenticated and stores the `UserDetails` in it.
-// 5. The `AuthenticationFilter` then stores the `Authentication` object in the `SecurityContextHolder`.
-//    This `Authentication` object is now available throughout the rest of the request's lifecycle.
-
-// So, the user doesn't need to do anything special for their data to be stored in the `SecurityContextHolder`.
-// As long as they provide valid credentials when sending a request to a secured endpoint,
-// Spring Security will handle the rest.

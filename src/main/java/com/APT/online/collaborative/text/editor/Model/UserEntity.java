@@ -3,7 +3,6 @@ import com.APT.online.collaborative.text.editor.Model.UserDocument;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -12,8 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@Setter
-@Getter
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,5 +22,4 @@ public class UserEntity {
 
 	@OneToMany(mappedBy = "user")
 	private List<UserDocument> userDocuments;
-
 }

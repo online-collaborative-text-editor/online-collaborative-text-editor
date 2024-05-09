@@ -37,7 +37,7 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers( "/api/auth/**", "/api/files/**", "/api/files/rename/**").permitAll()
+						.requestMatchers( "/api/auth/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.httpBasic();

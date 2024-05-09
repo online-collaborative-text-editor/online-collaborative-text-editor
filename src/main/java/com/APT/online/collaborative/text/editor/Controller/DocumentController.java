@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.FileNotFoundException;
 
+import com.APT.online.collaborative.text.editor.DTO.DocumentDTO;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/files")
 public class DocumentController {
@@ -18,28 +22,47 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName) {
-        Document document = documentService.createDocument(documentName);
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName, @RequestAttribute("username") String username) {
         Document document = documentService.createDocument(documentName, username);
         return ResponseEntity.status(HttpStatus.CREATED).body("Document with ID " + document.getId() + " was created successfully.");
     }
 
-    @GetMapping("/open/{id}")
-    public ResponseEntity<Document> openDocument(@PathVariable("id") String documentId) throws FileNotFoundException {
-        Document document = documentService.openDocument(documentId);
-        return ResponseEntity.ok(document);
-    }
-
     @PutMapping("/rename/{id}")
-    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestBody String newDocumentName) throws FileNotFoundException {
-        Document document = documentService.renameDocument(documentId, newDocumentName);
-        return ResponseEntity.ok("Document with ID " + documentId + " was renamed to " + newDocumentName + " successfully.");
+    // Owner/Editor
+    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestBody String newDocumentName, @RequestAttribute("username") String username) throws FileNotFoundException, IllegalAccessException {
+        Document document = documentService.renameDocument(documentId, newDocumentName, username);
+        String message = String.format("Document with ID %s was renamed to '%s' successfully.", documentId, newDocumentName);
+        return ResponseEntity.ok(message);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteDocument(@PathVariable("id") String documentId) throws FileNotFoundException {
-        documentService.deleteDocument(documentId);
+   @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteDocument(@PathVariable("id") String documentId, @RequestAttribute("username") String username) throws FileNotFoundException, IllegalAccessException {
+        documentService.deleteDocument(documentId, username);
         return ResponseEntity.ok("Document with ID " + documentId + " was deleted successfully.");
+    }
+
+   @GetMapping("/list/viewer")
+    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listViewerDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+    @GetMapping("/list/owner")
+    public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+    @GetMapping("/list/viewer-editor")
+    public ResponseEntity<List<DocumentDTO>> listViewerEditorDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listViewerEditorDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+    // Share a document with a user by granting him certain permissions
+    @PostMapping("/share/{id}")
+    public ResponseEntity<String> shareDocument(@PathVariable("id") String documentId, @RequestParam("username") String username, @RequestParam("permission") String permission, @RequestAttribute("username") String owner) throws FileNotFoundException, IllegalAccessException {
+        documentService.shareDocument(documentId, username, permission, owner);
+        return ResponseEntity.ok("Document with ID " + documentId + " was shared with " + username + " successfully.");
     }
 }

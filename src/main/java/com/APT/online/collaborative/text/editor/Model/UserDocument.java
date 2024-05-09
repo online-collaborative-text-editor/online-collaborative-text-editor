@@ -1,34 +1,30 @@
 package com.APT.online.collaborative.text.editor.Model;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import com.APT.online.collaborative.text.editor.Permission;
 
-import lombok.*;
-import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-@ToString
-
 @Entity
-@Table(name = "user_document")
+@Table(name = "user_documents")
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserDocument {
-    @EmbeddedId
-    private UserDocumentId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("userId")
     @JoinColumn(name = "user_id")
-    private UserEntity zzzzzzzzzzzzzzzzzzzzzzzzzzzz;
+    private UserEntity user;
 
     @ManyToOne
-    @MapsId("documentId")
     @JoinColumn(name = "document_id")
     private Document document;
 
-    private String permission; // Viewer - Editor - Owner
-
-    // getters and setters
+    // other fields like permissions, last access time, etc.
+    private Permission permission;
 }
