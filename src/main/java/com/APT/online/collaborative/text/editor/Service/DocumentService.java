@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.APT.online.collaborative.text.editor.DTO.DocumentDTO;
+import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -97,20 +99,22 @@ public class DocumentService {
     }
 
     private List<DocumentDTO> convertToDTO(List<Document> documents) {
-        List<DocumentDTO> documentDTOs = new ArrayList<>();
-        for (Document document : documents) {
-            DocumentDTO documentDTO = new DocumentDTO(
-                    document.getId(),
-                    document.getDocumentName(),
-                    document.getDocumentType(),
-                    document.getCreatedAt(),
-                    document.getLastModifiedAt(),
-                    document.getUserDocuments()
-            );
-            documentDTOs.add(documentDTO);
-        }
-        return documentDTOs;
+    List<DocumentDTO> documentDTOs = new ArrayList<>();
+    for (Document document : documents) {
+        DocumentDTO documentDTO = new DocumentDTO(
+                document.getId(),
+                document.getDocumentName(),
+                document.getCreatedAt(),
+                document.getLastModifiedAt()
+        );
+        documentDTOs.add(documentDTO);
     }
+
+    // Sort the documentDTOs list by lastModifiedAt attribute
+    Collections.sort(documentDTOs, Comparator.comparing(DocumentDTO::getLastModifiedAt).reversed());
+
+    return documentDTOs;
+}
 
     private List<Document> getDocumentsByPermission(String username, Permission permission) {
         UserEntity user = userRepository.findUserByUsername(username).orElse(null);

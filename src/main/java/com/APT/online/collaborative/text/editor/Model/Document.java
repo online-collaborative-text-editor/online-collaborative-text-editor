@@ -44,8 +44,6 @@ public class Document {
 
     private String documentName;
 
-    private String documentType;
-
     @Lob
     private byte[] data;
 
@@ -57,7 +55,6 @@ public class Document {
 
     public Document(String documentName, String documentType, byte[] data, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.documentName = documentName;
-        this.documentType = documentType;
         this.data = data;
         this.createdAt = createdAt;
         this.lastModifiedAt = lastModifiedAt;
