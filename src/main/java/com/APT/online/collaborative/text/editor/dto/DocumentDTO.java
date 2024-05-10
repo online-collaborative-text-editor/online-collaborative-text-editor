@@ -18,11 +18,4 @@ public class DocumentDTO {
     private String documentName;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
-
-    public DocumentDTO(String id, String documentName, String documentType, LocalDateTime createdAt, LocalDateTime lastModifiedAt, List<UserDocument> userDocuments) {
-        this.id = id;
-        this.documentName = documentName;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
-    }
 }

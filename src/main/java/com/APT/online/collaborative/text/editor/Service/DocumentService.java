@@ -83,20 +83,40 @@ public class DocumentService {
        documentRepository.deleteById(documentId);
    }
 
-    public List<DocumentDTO> listViewerDocuments(String username) {
-        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
-    }
-
     public List<DocumentDTO> listOwnerDocuments(String username) {
         return convertToDTO(getDocumentsByPermission(username, Permission.OWNER));
     }
 
-    public List<DocumentDTO> listViewerEditorDocuments(String username) {
+    public List<DocumentDTO> listSharedWithMeDocuments(String username) {
         List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
         List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
         viewerDocuments.addAll(editorDocuments);
         return convertToDTO(viewerDocuments);
     }
+
+//    public List<DocumentDTO> listViewerDocuments(String username) {
+//        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
+//    }
+
+//    public List<DocumentDTO> listEditorDocuments(String username) {
+//        return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
+//    }
+
+//    public List<DocumentDTO> listHasEditAccessDocuments(String username) {
+//        List<Document> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
+//        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+//        ownerDocuments.addAll(editorDocuments);
+//        return convertToDTO(ownerDocuments);
+//    }
+
+//    public List<DocumentDTO> listAllDocuments(String username) {
+//        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
+//        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+//        List<Document> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
+//        viewerDocuments.addAll(editorDocuments);
+//        viewerDocuments.addAll(ownerDocuments);
+//        return convertToDTO(viewerDocuments);
+//    }
 
     private List<DocumentDTO> convertToDTO(List<Document> documents) {
     List<DocumentDTO> documentDTOs = new ArrayList<>();

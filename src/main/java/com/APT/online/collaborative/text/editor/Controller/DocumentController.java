@@ -42,27 +42,45 @@ public class DocumentController {
         return ResponseEntity.ok("Document with ID " + documentId + " was deleted successfully.");
     }
 
-   @GetMapping("/list/viewed")
-    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
-        List<DocumentDTO> documents = documentService.listViewerDocuments(username);
-        return ResponseEntity.ok(documents);
-    }
-
-    @GetMapping("/list/owned")
-    public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
-        List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
-        return ResponseEntity.ok(documents);
-    }
-
-    @GetMapping("/list/viewer-editor")
-    public ResponseEntity<List<DocumentDTO>> listViewerEditorDocuments(@RequestAttribute("username") String username) {
-        List<DocumentDTO> documents = documentService.listViewerEditorDocuments(username);
-        return ResponseEntity.ok(documents);
-    }
-
     @PostMapping("/share/{id}")
     public ResponseEntity<String> shareDocument(@PathVariable("id") String documentId, @RequestParam("username") String username, @RequestParam("permission") String permission, @RequestAttribute("username") String owner) throws FileNotFoundException, IllegalAccessException {
         documentService.shareDocument(documentId, username, permission, owner);
         return ResponseEntity.ok("Document with ID " + documentId + " was shared with " + username + " successfully.");
     }
+
+    @GetMapping("/list/owner")
+    public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+    @GetMapping("/list/shared-with-me")
+    public ResponseEntity<List<DocumentDTO>> listSharedWithMeDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listSharedWithMeDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+//   @GetMapping("/list/viewer")
+//    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
+//        List<DocumentDTO> documents = documentService.listViewerDocuments(username);
+//        return ResponseEntity.ok(documents);
+//    }
+
+//    @GetMapping("/list/editor")
+//    public ResponseEntity<List<DocumentDTO>> listEditorDocuments(@RequestAttribute("username") String username) {
+//        List<DocumentDTO> documents = documentService.listEditorDocuments(username);
+//        return ResponseEntity.ok(documents);
+//    }
+
+//    @GetMapping("/list/has-edit-access")
+//    public ResponseEntity<List<DocumentDTO>> listHasEditAccessDocuments(@RequestAttribute("username") String username) {
+//        List<DocumentDTO> documents = documentService.listHasEditAccessDocuments(username);
+//        return ResponseEntity.ok(documents);
+//    }
+
+//    @GetMapping("/list/all")
+//    public ResponseEntity<List<DocumentDTO>> listAllDocuments(@RequestAttribute("username") String username) {
+//        List<DocumentDTO> documents = documentService.listAllDocuments(username);
+//        return ResponseEntity.ok(documents);
+//    }
 }
