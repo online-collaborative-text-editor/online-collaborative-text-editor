@@ -18,4 +18,13 @@ public class DocumentDTO {
     private String documentName;
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
+    private List<String> contributors;
+    private String permission;
+
+    public DocumentDTO(String id, String documentName, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+        this.id = id;
+        this.documentName = documentName;
+        this.createdAt = createdAt;
+        this.lastModifiedAt = lastModifiedAt;
+    }
 }

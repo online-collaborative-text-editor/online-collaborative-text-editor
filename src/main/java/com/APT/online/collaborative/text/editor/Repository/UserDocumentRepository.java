@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -20,4 +21,7 @@ public interface UserDocumentRepository extends JpaRepository<UserDocument, Long
     @Modifying
     @Query("DELETE FROM UserDocument ud WHERE ud.document.id = :documentId")
     void deleteByDocumentId(@Param("documentId") String documentId);
+
+    @Query("SELECT ud.user.username FROM UserDocument ud WHERE ud.document.id = :documentId")
+    List<String> findUsernamesByDocumentId(@Param("documentId") String documentId);
 }

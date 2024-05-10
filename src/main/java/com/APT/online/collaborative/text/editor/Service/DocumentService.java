@@ -87,16 +87,22 @@ public class DocumentService {
         return convertToDTO(getDocumentsByPermission(username, Permission.OWNER));
     }
 
+//    public List<DocumentDTO> listSharedWithMeDocuments(String username) {
+//        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
+//        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+//        viewerDocuments.addAll(editorDocuments);
+//        return convertToDTO(viewerDocuments);
+//    }
+
     public List<DocumentDTO> listSharedWithMeDocuments(String username) {
-        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
-        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+        List<UserDocument> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
+        List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
         viewerDocuments.addAll(editorDocuments);
         return convertToDTO(viewerDocuments);
     }
-
-//    public List<DocumentDTO> listViewerDocuments(String username) {
-//        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
-//    }
+    public List<DocumentDTO> listViewerDocuments(String username) {
+        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
+    }
 
 //    public List<DocumentDTO> listEditorDocuments(String username) {
 //        return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
@@ -118,34 +124,58 @@ public class DocumentService {
 //        return convertToDTO(viewerDocuments);
 //    }
 
-    private List<DocumentDTO> convertToDTO(List<Document> documents) {
-    List<DocumentDTO> documentDTOs = new ArrayList<>();
-    for (Document document : documents) {
-        DocumentDTO documentDTO = new DocumentDTO(
-                document.getId(),
-                document.getDocumentName(),
-                document.getCreatedAt(),
-                document.getLastModifiedAt()
-        );
-        documentDTOs.add(documentDTO);
+//    private List<DocumentDTO> convertToDTO(List<Document> documents) {
+//    List<DocumentDTO> documentDTOs = new ArrayList<>();
+//    for (Document document : documents) {
+//        DocumentDTO documentDTO = new DocumentDTO(
+//                document.getId(),
+//                document.getDocumentName(),
+//                document.getCreatedAt(),
+//                document.getLastModifiedAt()
+//        );
+//        documentDTOs.add(documentDTO);
+//    }
+//
+//    // Sort the documentDTOs list by lastModifiedAt attribute
+//    Collections.sort(documentDTOs, Comparator.comparing(DocumentDTO::getLastModifiedAt).reversed());
+//
+//    return documentDTOs;
+//}
+
+    private List<DocumentDTO> convertToDTO(List<UserDocument> userDocuments) {
+        List<DocumentDTO> documentDTOs = new ArrayList<>();
+        for (UserDocument userDocument : userDocuments) {
+            Document document = userDocument.getDocument();
+            DocumentDTO documentDTO = new DocumentDTO(
+                    document.getId(),
+                    document.getDocumentName(),
+                    document.getCreatedAt(),
+                    document.getLastModifiedAt()
+            );
+            documentDTO.setPermission(userDocument.getPermission().toString());
+            List<String> contributors = userDocumentRepository.findUsernamesByDocumentId(document.getId());
+            documentDTO.setContributors(contributors);
+            documentDTOs.add(documentDTO);
+        }
+
+        // Sort the documentDTOs list by lastModifiedAt attribute
+        Collections.sort(documentDTOs, Comparator.comparing(DocumentDTO::getLastModifiedAt).reversed());
+
+        return documentDTOs;
     }
 
-    // Sort the documentDTOs list by lastModifiedAt attribute
-    Collections.sort(documentDTOs, Comparator.comparing(DocumentDTO::getLastModifiedAt).reversed());
 
-    return documentDTOs;
-}
 
-    private List<Document> getDocumentsByPermission(String username, Permission permission) {
+    private List<UserDocument> getDocumentsByPermission(String username, Permission permission) {
         UserEntity user = userRepository.findUserByUsername(username).orElse(null);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
         }
         List<UserDocument> userDocuments = user.getUserDocuments();
-        List<Document> documents = new ArrayList<>();
+        List<UserDocument> documents = new ArrayList<>();
         for (UserDocument userDocument : userDocuments) {
             if (userDocument.getPermission() == permission) {
-                documents.add(userDocument.getDocument());
+                documents.add(userDocument);
             }
         }
         return documents;
