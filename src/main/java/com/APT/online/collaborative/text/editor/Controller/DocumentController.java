@@ -60,6 +60,18 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithPermission(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listAllDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
+    @GetMapping("/list/all-with-edit-or-owner-permission")
+    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithEditOrOwnerPermission(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listAllDocumentsWithEditOrOwnerPermission(username);
+        return ResponseEntity.ok(documents);
+    }
+
 //   @GetMapping("/list/viewer")
 //    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
 //        List<DocumentDTO> documents = documentService.listViewerDocuments(username);

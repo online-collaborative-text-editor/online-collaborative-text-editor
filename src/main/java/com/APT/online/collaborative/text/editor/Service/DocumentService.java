@@ -200,4 +200,20 @@ public class DocumentService {
         newSharedUserDocument.setPermission(Permission.valueOf(permission));
         userDocumentRepository.save(newSharedUserDocument);
     }
+
+    public List<DocumentDTO> listAllDocuments(String username) {
+        List<UserDocument> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
+        List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+        List<UserDocument> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
+        viewerDocuments.addAll(editorDocuments);
+        viewerDocuments.addAll(ownerDocuments);
+        return convertToDTO(viewerDocuments);
+    }
+
+    public List<DocumentDTO> listAllDocumentsWithEditOrOwnerPermission(String username) {
+        List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+        List<UserDocument> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
+        editorDocuments.addAll(ownerDocuments);
+        return convertToDTO(editorDocuments);
+    }
 }
