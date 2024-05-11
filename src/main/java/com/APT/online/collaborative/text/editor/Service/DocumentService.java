@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -29,7 +30,7 @@ public class DocumentService {
     @Autowired
     private UserDocumentRepository userDocumentRepository;
 
-    public Document createDocument(String documentName, String username){
+    public Document createDocument(String documentName, String username) throws IOException {
         DocumentUtils.validateDocumentName(documentName);
 
         try {
@@ -53,7 +54,7 @@ public class DocumentService {
         }
     }
 
-    public Document renameDocument(String documentId, String newDocumentName, String username) throws FileNotFoundException, IllegalAccessException {
+    public Document renameDocument(String documentId, String newDocumentName, String username) throws FileNotFoundException, IllegalAccessException , IOException{
         UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
                 .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
 
@@ -68,7 +69,7 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
-   public void deleteDocument(String documentId, String username) throws FileNotFoundException, IllegalAccessException {
+   public void deleteDocument(String documentId, String username) throws FileNotFoundException, IllegalAccessException, IOException {
        UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
                .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
 
@@ -80,7 +81,7 @@ public class DocumentService {
        documentRepository.deleteById(documentId);
    }
 
-    public List<DocumentDTO> listOwnerDocuments(String username) {
+    public List<DocumentDTO> listOwnerDocuments(String username)throws IOException  {
         return convertToDTO(getDocumentsByPermission(username, Permission.OWNER));
     }
 
@@ -91,17 +92,17 @@ public class DocumentService {
 //        return convertToDTO(viewerDocuments);
 //    }
 
-    public List<DocumentDTO> listSharedWithMeDocuments(String username) {
+    public List<DocumentDTO> listSharedWithMeDocuments(String username) throws IOException  {
         List<UserDocument> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
         List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
         viewerDocuments.addAll(editorDocuments);
         return convertToDTO(viewerDocuments);
     }
-    public List<DocumentDTO> listViewerDocuments(String username) {
+    public List<DocumentDTO> listViewerDocuments(String username) throws IOException {
         return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
     }
 
-    public List<DocumentDTO> listEditorDocuments(String username) {
+    public List<DocumentDTO> listEditorDocuments(String username) throws IOException {
         return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
     }
 
@@ -139,7 +140,7 @@ public class DocumentService {
 //    return documentDTOs;
 //}
 
-    private List<DocumentDTO> convertToDTO(List<UserDocument> userDocuments) {
+    private List<DocumentDTO> convertToDTO(List<UserDocument> userDocuments) throws IOException {
         List<DocumentDTO> documentDTOs = new ArrayList<>();
         for (UserDocument userDocument : userDocuments) {
             Document document = userDocument.getDocument();
@@ -168,7 +169,7 @@ public class DocumentService {
 
 
 
-    private List<UserDocument> getDocumentsByPermission(String username, Permission permission) {
+    private List<UserDocument> getDocumentsByPermission(String username, Permission permission) throws IOException {
         UserEntity user = userRepository.findUserByUsername(username).orElse(null);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
@@ -183,7 +184,7 @@ public class DocumentService {
         return documents;
     }
 
-    public void shareDocument(String documentId, String username, String permission, String owner) throws FileNotFoundException, IllegalAccessException {
+    public void shareDocument(String documentId, String username, String permission, String owner) throws FileNotFoundException, IllegalAccessException, IOException{
         UserEntity user = userRepository.findUserByUsername(username).orElse(null);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
@@ -203,7 +204,7 @@ public class DocumentService {
         userDocumentRepository.save(newSharedUserDocument);
     }
 
-    public List<DocumentDTO> listAllDocuments(String username) {
+    public List<DocumentDTO> listAllDocuments(String username) throws IOException {
         List<UserDocument> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
         List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
         List<UserDocument> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
@@ -212,7 +213,7 @@ public class DocumentService {
         return convertToDTO(viewerDocuments);
     }
 
-    public List<DocumentDTO> listAllDocumentsWithEditOrOwnerPermission(String username) {
+    public List<DocumentDTO> listAllDocumentsWithEditOrOwnerPermission(String username) throws IOException {
         List<UserDocument> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
         List<UserDocument> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
         editorDocuments.addAll(ownerDocuments);

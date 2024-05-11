@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 
 import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class DocumentController {
 
     @PutMapping("/rename/{id}")
     // Owner/Editor
-    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestBody Map<String, String> requestBody, @RequestAttribute("username") String username) throws FileNotFoundException, IllegalAccessException {
+    public ResponseEntity<String> renameDocument(@PathVariable("id") String documentId, @RequestBody Map<String, String> requestBody, @RequestAttribute("username") String username) throws IOException, IllegalAccessException {
         String newDocumentName = requestBody.get("newDocumentName");
         Document document = documentService.renameDocument(documentId, newDocumentName, username);
         String message = String.format("Document with ID %s was renamed to '%s' successfully.", documentId, newDocumentName);
@@ -37,49 +38,49 @@ public class DocumentController {
     }
 
    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteDocument(@PathVariable("id") String documentId, @RequestAttribute("username") String username) throws FileNotFoundException, IllegalAccessException {
+    public ResponseEntity<String> deleteDocument(@PathVariable("id") String documentId, @RequestAttribute("username") String username) throws IOException, IllegalAccessException {
         documentService.deleteDocument(documentId, username);
         return ResponseEntity.ok("Document with ID " + documentId + " was deleted successfully.");
     }
 
     @PostMapping("/share/{id}")
-    public ResponseEntity<String> shareDocument(@PathVariable("id") String documentId, @RequestParam("username") String username, @RequestParam("permission") String permission, @RequestAttribute("username") String owner) throws FileNotFoundException, IllegalAccessException {
+    public ResponseEntity<String> shareDocument(@PathVariable("id") String documentId, @RequestParam("username") String username, @RequestParam("permission") String permission, @RequestAttribute("username") String owner) throws IOException, IllegalAccessException {
         documentService.shareDocument(documentId, username, permission, owner);
         return ResponseEntity.ok("Document with ID " + documentId + " was shared with " + username + " successfully.");
     }
 
     @GetMapping("/list/owned")
-    public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/list/shared-with-me")
-    public ResponseEntity<List<DocumentDTO>> listSharedWithMeDocuments(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listSharedWithMeDocuments(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listSharedWithMeDocuments(username);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/list/all")
-    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithPermission(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithPermission(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listAllDocuments(username);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/list/all-with-edit-or-owner-permission")
-    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithEditOrOwnerPermission(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithEditOrOwnerPermission(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listAllDocumentsWithEditOrOwnerPermission(username);
         return ResponseEntity.ok(documents);
     }
 
    @GetMapping("/list/viewed")
-    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listViewerDocuments(username);
         return ResponseEntity.ok(documents);
     }
 
     @GetMapping("/list/edited")
-    public ResponseEntity<List<DocumentDTO>> listEditorDocuments(@RequestAttribute("username") String username) {
+    public ResponseEntity<List<DocumentDTO>> listEditorDocuments(@RequestAttribute("username") String username) throws IOException {
         List<DocumentDTO> documents = documentService.listEditorDocuments(username);
         return ResponseEntity.ok(documents);
     }

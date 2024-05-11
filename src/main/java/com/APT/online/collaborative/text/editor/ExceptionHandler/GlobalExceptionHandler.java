@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import javax.naming.NoPermissionException;
 import java.io.FileNotFoundException;
 
 @ControllerAdvice
@@ -20,4 +21,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleFileStorageException(FileStorageException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
+
+    @ExceptionHandler(NoPermissionException.class)
+    public ResponseEntity<?> handleNoPermissionException(NoPermissionException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
+
+        // Add more handlers for other exceptions
 }
