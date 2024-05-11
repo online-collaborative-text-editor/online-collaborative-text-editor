@@ -23,7 +23,7 @@ public class DocumentController {
     private DocumentService documentService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName, @RequestAttribute("username") String username) {
+    public ResponseEntity<String> createDocument(@RequestParam("documentName") String documentName, @RequestAttribute("username") String username) throws IOException {
         Document document = documentService.createDocument(documentName, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(document.getId());
     }
