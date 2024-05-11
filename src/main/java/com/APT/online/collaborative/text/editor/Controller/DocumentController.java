@@ -48,7 +48,7 @@ public class DocumentController {
         return ResponseEntity.ok("Document with ID " + documentId + " was shared with " + username + " successfully.");
     }
 
-    @GetMapping("/list/owner")
+    @GetMapping("/list/owned")
     public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
         List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
         return ResponseEntity.ok(documents);
@@ -60,7 +60,7 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/list/all")
     public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithPermission(@RequestAttribute("username") String username) {
         List<DocumentDTO> documents = documentService.listAllDocuments(username);
         return ResponseEntity.ok(documents);
