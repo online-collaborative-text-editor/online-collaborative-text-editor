@@ -60,7 +60,7 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/list/all")
     public ResponseEntity<List<DocumentDTO>> listAllDocumentsWithPermission(@RequestAttribute("username") String username) {
         List<DocumentDTO> documents = documentService.listAllDocuments(username);
         return ResponseEntity.ok(documents);
@@ -72,17 +72,17 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
-//   @GetMapping("/list/viewer")
-//    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
-//        List<DocumentDTO> documents = documentService.listViewerDocuments(username);
-//        return ResponseEntity.ok(documents);
-//    }
+   @GetMapping("/list/viewed")
+    public ResponseEntity<List<DocumentDTO>> listViewerDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listViewerDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
 
-//    @GetMapping("/list/editor")
-//    public ResponseEntity<List<DocumentDTO>> listEditorDocuments(@RequestAttribute("username") String username) {
-//        List<DocumentDTO> documents = documentService.listEditorDocuments(username);
-//        return ResponseEntity.ok(documents);
-//    }
+    @GetMapping("/list/edited")
+    public ResponseEntity<List<DocumentDTO>> listEditorDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listEditorDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
 
 //    @GetMapping("/list/has-edit-access")
 //    public ResponseEntity<List<DocumentDTO>> listHasEditAccessDocuments(@RequestAttribute("username") String username) {

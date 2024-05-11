@@ -20,6 +20,7 @@ public class DocumentDTO {
     private LocalDateTime lastModifiedAt;
     private List<String> contributors;
     private String permission;
+    private String owner;
 
     public DocumentDTO(String id, String documentName, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.id = id;

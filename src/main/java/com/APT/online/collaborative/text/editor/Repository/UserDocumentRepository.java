@@ -1,6 +1,7 @@
 package com.APT.online.collaborative.text.editor.Repository;
 
 import com.APT.online.collaborative.text.editor.Model.UserDocument;
+import com.APT.online.collaborative.text.editor.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,7 @@ public interface UserDocumentRepository extends JpaRepository<UserDocument, Long
 
     @Query("SELECT ud.user.username FROM UserDocument ud WHERE ud.document.id = :documentId")
     List<String> findUsernamesByDocumentId(@Param("documentId") String documentId);
+
+    @Query("SELECT ud.user.username FROM UserDocument ud WHERE ud.document.id = :documentId AND ud.permission = :permission")
+    String findOwnerUsernameByDocumentId(@Param("documentId") String documentId, @Param("permission") Permission permission);
 }

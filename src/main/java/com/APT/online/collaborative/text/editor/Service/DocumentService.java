@@ -18,10 +18,7 @@ import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class DocumentService {
@@ -104,9 +101,9 @@ public class DocumentService {
         return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
     }
 
-//    public List<DocumentDTO> listEditorDocuments(String username) {
-//        return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
-//    }
+    public List<DocumentDTO> listEditorDocuments(String username) {
+        return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
+    }
 
 //    public List<DocumentDTO> listHasEditAccessDocuments(String username) {
 //        List<Document> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
@@ -151,10 +148,15 @@ public class DocumentService {
                     document.getDocumentName(),
                     document.getCreatedAt(),
                     document.getLastModifiedAt()
+
             );
             documentDTO.setPermission(userDocument.getPermission().toString());
             List<String> contributors = userDocumentRepository.findUsernamesByDocumentId(document.getId());
             documentDTO.setContributors(contributors);
+
+            String owner = userDocumentRepository.findOwnerUsernameByDocumentId(document.getId(), Permission.OWNER);
+            documentDTO.setOwner(owner);
+
             documentDTOs.add(documentDTO);
         }
 
