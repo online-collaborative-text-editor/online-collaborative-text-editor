@@ -32,7 +32,7 @@ public class DocumentService {
     @Autowired
     private UserDocumentRepository userDocumentRepository;
 
-    public Document createDocument(String documentName, String username){
+    public Document createDocument(String documentName, String username) {
         DocumentUtils.validateDocumentName(documentName);
 
         try {
@@ -71,84 +71,28 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
-   public void deleteDocument(String documentId, String username) throws FileNotFoundException, IllegalAccessException {
-       UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
-               .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
+    public void deleteDocument(String documentId, String username) throws FileNotFoundException, IllegalAccessException {
+        UserDocument userDocument = userDocumentRepository.findUserDocumentByUsernameAndDocumentId(username, documentId)
+                .orElseThrow(() -> new FileNotFoundException("No document found with id: " + documentId + " for user: " + username));
 
-       if (userDocument.getPermission() != Permission.OWNER) {
-           throw new IllegalAccessException("User does not have permission to delete the document");
-       }
+        if (userDocument.getPermission() != Permission.OWNER) {
+            throw new IllegalAccessException("User does not have permission to delete the document");
+        }
 
-       userDocumentRepository.deleteByDocumentId(documentId);
-       documentRepository.deleteById(documentId);
-   }
+        userDocumentRepository.deleteByDocumentId(documentId);
+        documentRepository.deleteById(documentId);
+    }
 
     public List<DocumentDTO> listOwnerDocuments(String username) {
-        return convertToDTO(getDocumentsByPermission(username, Permission.OWNER));
+        List<UserDocument> ownerDocuments = getUserDocumentsByPermission(username, Permission.OWNER);
+        return DocumentUtils.convertToDTO(ownerDocuments);
     }
 
     public List<DocumentDTO> listSharedWithMeDocuments(String username) {
-        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
-        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
+        List<UserDocument> viewerDocuments = getUserDocumentsByPermission(username, Permission.VIEWER);
+        List<UserDocument> editorDocuments = getUserDocumentsByPermission(username, Permission.EDITOR);
         viewerDocuments.addAll(editorDocuments);
-        return convertToDTO(viewerDocuments);
-    }
-
-//    public List<DocumentDTO> listViewerDocuments(String username) {
-//        return convertToDTO(getDocumentsByPermission(username, Permission.VIEWER));
-//    }
-
-//    public List<DocumentDTO> listEditorDocuments(String username) {
-//        return convertToDTO(getDocumentsByPermission(username, Permission.EDITOR));
-//    }
-
-//    public List<DocumentDTO> listHasEditAccessDocuments(String username) {
-//        List<Document> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
-//        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
-//        ownerDocuments.addAll(editorDocuments);
-//        return convertToDTO(ownerDocuments);
-//    }
-
-//    public List<DocumentDTO> listAllDocuments(String username) {
-//        List<Document> viewerDocuments = getDocumentsByPermission(username, Permission.VIEWER);
-//        List<Document> editorDocuments = getDocumentsByPermission(username, Permission.EDITOR);
-//        List<Document> ownerDocuments = getDocumentsByPermission(username, Permission.OWNER);
-//        viewerDocuments.addAll(editorDocuments);
-//        viewerDocuments.addAll(ownerDocuments);
-//        return convertToDTO(viewerDocuments);
-//    }
-
-    private List<DocumentDTO> convertToDTO(List<Document> documents) {
-    List<DocumentDTO> documentDTOs = new ArrayList<>();
-    for (Document document : documents) {
-        DocumentDTO documentDTO = new DocumentDTO(
-                document.getId(),
-                document.getDocumentName(),
-                document.getCreatedAt(),
-                document.getLastModifiedAt()
-        );
-        documentDTOs.add(documentDTO);
-    }
-
-    // Sort the documentDTOs list by lastModifiedAt attribute
-    Collections.sort(documentDTOs, Comparator.comparing(DocumentDTO::getLastModifiedAt).reversed());
-
-    return documentDTOs;
-}
-
-    private List<Document> getDocumentsByPermission(String username, Permission permission) {
-        UserEntity user = userRepository.findUserByUsername(username).orElse(null);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
-        }
-        List<UserDocument> userDocuments = user.getUserDocuments();
-        List<Document> documents = new ArrayList<>();
-        for (UserDocument userDocument : userDocuments) {
-            if (userDocument.getPermission() == permission) {
-                documents.add(userDocument.getDocument());
-            }
-        }
-        return documents;
+        return DocumentUtils.convertToDTO(viewerDocuments);
     }
 
     public void shareDocument(String documentId, String username, String permission, String owner) throws FileNotFoundException, IllegalAccessException {
@@ -169,5 +113,14 @@ public class DocumentService {
         newSharedUserDocument.setDocument(userDocument.getDocument());
         newSharedUserDocument.setPermission(Permission.valueOf(permission));
         userDocumentRepository.save(newSharedUserDocument);
+    }
+
+    // Helper Function
+    private List<UserDocument> getUserDocumentsByPermission(String username, Permission permission) {
+        UserEntity user = userRepository.findUserByUsername(username).orElse(null);
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        return userDocumentRepository.findUserDocumentsByUsernameAndPermission(username, permission);
     }
 }
