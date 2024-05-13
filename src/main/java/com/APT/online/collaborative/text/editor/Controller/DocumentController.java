@@ -54,6 +54,13 @@ public class DocumentController {
         return ResponseEntity.ok(documents);
     }
 
+    // List all documents
+    @GetMapping("/list")
+    public ResponseEntity<List<DocumentDTO>> listDocuments(@RequestAttribute("username") String username) {
+        List<DocumentDTO> documents = documentService.listDocuments(username);
+        return ResponseEntity.ok(documents);
+    }
+
     @PostMapping("/share/{id}")
     public ResponseEntity<String> shareDocument(@PathVariable("id") String documentId, @RequestParam("username") String username, @RequestParam("permission") String permission, @RequestAttribute("username") String owner) throws FileNotFoundException, IllegalAccessException {
         documentService.shareDocument(documentId, username, permission, owner);

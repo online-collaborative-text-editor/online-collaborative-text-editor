@@ -1,5 +1,6 @@
 package com.APT.online.collaborative.text.editor.Service;
 
+import com.APT.online.collaborative.text.editor.Exception.FileStorageException;
 import com.APT.online.collaborative.text.editor.Model.Document;
 import com.APT.online.collaborative.text.editor.Model.UserDocument;
 import com.APT.online.collaborative.text.editor.Model.UserEntity;
@@ -8,19 +9,13 @@ import com.APT.online.collaborative.text.editor.Repository.DocumentRepository;
 import com.APT.online.collaborative.text.editor.Repository.UserDocumentRepository;
 import com.APT.online.collaborative.text.editor.Repository.UserRepository;
 import com.APT.online.collaborative.text.editor.Utils.DocumentUtils;
-import com.APT.online.collaborative.text.editor.Exception.FileStorageException;
+import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.APT.online.collaborative.text.editor.dto.DocumentDTO;
-
 import java.io.FileNotFoundException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -85,14 +80,23 @@ public class DocumentService {
 
     public List<DocumentDTO> listOwnerDocuments(String username) {
         List<UserDocument> ownerDocuments = getUserDocumentsByPermission(username, Permission.OWNER);
-        return DocumentUtils.convertToDTO(ownerDocuments);
+        return DocumentUtils.convertToDTO(ownerDocuments, userDocumentRepository);
     }
 
     public List<DocumentDTO> listSharedWithMeDocuments(String username) {
         List<UserDocument> viewerDocuments = getUserDocumentsByPermission(username, Permission.VIEWER);
         List<UserDocument> editorDocuments = getUserDocumentsByPermission(username, Permission.EDITOR);
         viewerDocuments.addAll(editorDocuments);
-        return DocumentUtils.convertToDTO(viewerDocuments);
+        return DocumentUtils.convertToDTO(viewerDocuments, userDocumentRepository);
+    }
+
+    public List<DocumentDTO> listDocuments(String username) {
+        List<UserDocument> ownerDocuments = getUserDocumentsByPermission(username, Permission.OWNER);
+        List<UserDocument> viewerDocuments = getUserDocumentsByPermission(username, Permission.VIEWER);
+        List<UserDocument> editorDocuments = getUserDocumentsByPermission(username, Permission.EDITOR);
+        ownerDocuments.addAll(viewerDocuments);
+        ownerDocuments.addAll(editorDocuments);
+        return DocumentUtils.convertToDTO(ownerDocuments, userDocumentRepository);
     }
 
     public void shareDocument(String documentId, String username, String permission, String owner) throws FileNotFoundException, IllegalAccessException {

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,4 +18,6 @@ public class DocumentDTO {
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
     private String permission;
+    private String owner;
+    private List<String> contributors;
 }
