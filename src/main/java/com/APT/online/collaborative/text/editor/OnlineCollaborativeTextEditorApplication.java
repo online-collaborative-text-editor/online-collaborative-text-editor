@@ -6,7 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class OnlineCollaborativeTextEditorApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OnlineCollaborativeTextEditorApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(OnlineCollaborativeTextEditorApplication.class, args);
+    }
+// Dummy Commit.
 }
