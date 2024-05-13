@@ -13,7 +13,7 @@ public class CorsConfig {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("https://docs-2.onrender.com/") // Update with your React app's origin
+						.allowedOrigins("https://docs-2.onrender.com/","http://localhost:3000/") // Update with your React app's origin
 						.allowedMethods("GET", "POST", "PUT", "DELETE")
 						.allowedHeaders("*");
 			}
