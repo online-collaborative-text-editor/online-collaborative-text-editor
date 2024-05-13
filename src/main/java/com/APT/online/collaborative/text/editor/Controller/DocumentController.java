@@ -42,7 +42,7 @@ public class DocumentController {
         return ResponseEntity.ok("Document with ID " + documentId + " was deleted successfully.");
     }
 
-    @GetMapping("/list/owner")
+    @GetMapping("/list/owned")
     public ResponseEntity<List<DocumentDTO>> listOwnerDocuments(@RequestAttribute("username") String username) {
         List<DocumentDTO> documents = documentService.listOwnerDocuments(username);
         return ResponseEntity.ok(documents);
@@ -55,7 +55,7 @@ public class DocumentController {
     }
 
     // List all documents
-    @GetMapping("/list")
+    @GetMapping("/list/all")
     public ResponseEntity<List<DocumentDTO>> listDocuments(@RequestAttribute("username") String username) {
         List<DocumentDTO> documents = documentService.listDocuments(username);
         return ResponseEntity.ok(documents);
