@@ -44,8 +44,8 @@ public class Document {
 
     private String documentName;
 
-    @Column(columnDefinition = "json")
-    private String data;
+    @Lob
+    private byte[] data;
 
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
@@ -53,8 +53,7 @@ public class Document {
     @OneToMany(mappedBy = "document")
     private List<UserDocument> userDocuments;
 
-
-    public Document(String documentName, String data, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
+    public Document(String documentName, String documentType, byte[] data, LocalDateTime createdAt, LocalDateTime lastModifiedAt) {
         this.documentName = documentName;
         this.data = data;
         this.createdAt = createdAt;

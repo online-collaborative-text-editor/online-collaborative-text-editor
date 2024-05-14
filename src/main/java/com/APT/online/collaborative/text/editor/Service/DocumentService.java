@@ -36,8 +36,7 @@ public class DocumentService {
                 throw new UsernameNotFoundException("User not found with username: " + username);
             }
 
-//            Document document = new Document(documentName, "text/plain", , LocalDateTime.now(), LocalDateTime.now());
-            Document document = new Document(documentName, "text/plain", LocalDateTime.now(), LocalDateTime.now());
+            Document document = new Document(documentName, "text/plain", new byte[0], LocalDateTime.now(), LocalDateTime.now());
             Document savedDocument = documentRepository.save(document);
 
             UserDocument userDocument = new UserDocument();
