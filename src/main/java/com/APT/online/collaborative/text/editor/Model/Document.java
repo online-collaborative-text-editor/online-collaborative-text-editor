@@ -45,6 +45,7 @@ public class Document {
     private String documentName;
 
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] data;
 
     private LocalDateTime createdAt;
